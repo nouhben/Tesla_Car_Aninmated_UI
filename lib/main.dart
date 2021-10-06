@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import 'package:tesla_annimation_ui/controllers/home_controller.dart';
+import 'package:tesla_annimation_ui/shared/constants.dart';
+
+import 'widgets/door_lock.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,34 +23,66 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.black,
       ),
-      home: const HomePage(),
+      home: HomePage(),
     );
   }
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
-
+  HomePage({Key? key}) : super(key: key);
+  final HomeController _controller = HomeController();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: LayoutBuilder(builder: (context, constraints) {
-          return Stack(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: constraints.maxHeight * 0.1,
-                ),
-                child: SvgPicture.asset(
-                  'assets/icons/Car.svg',
-                  width: double.infinity,
-                ),
-              ),
-            ],
+    return AnimatedBuilder(
+        animation: _controller,
+        builder: (context, snapshot) {
+          return Scaffold(
+            body: SafeArea(
+              child: LayoutBuilder(
+                  builder: (context, constraints) => Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: constraints.maxHeight * 0.1,
+                            ),
+                            child: SvgPicture.asset(
+                              'assets/icons/Car.svg',
+                              width: double.infinity,
+                            ),
+                          ),
+                          Positioned(
+                            right: constraints.maxWidth * 0.05,
+                            child: DoorLock(
+                              isLocked: _controller.isRightDoorLocked,
+                              onPress: _controller.updateRightDoor,
+                            ),
+                          ),
+                          Positioned(
+                            left: constraints.maxWidth * 0.05,
+                            child: DoorLock(
+                              isLocked: _controller.isLeftDoorLocked,
+                              onPress: _controller.updateLeftDoor,
+                            ),
+                          ),
+                          Positioned(
+                            top: constraints.maxHeight * 0.13,
+                            child: DoorLock(
+                              isLocked: _controller.isBonnetDoorLocked,
+                              onPress: _controller.updateBonnetDoor,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: constraints.maxHeight * 0.17,
+                            child: DoorLock(
+                              isLocked: _controller.isTrunkLocked,
+                              onPress: _controller.updateTrunkDoor,
+                            ),
+                          ),
+                        ],
+                      )),
+            ),
           );
-        }),
-      ),
-    );
+        });
   }
 }
