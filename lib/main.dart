@@ -38,8 +38,10 @@ class HomePage extends StatelessWidget {
         builder: (context, snapshot) {
           return Scaffold(
             bottomNavigationBar: TeslaBottomNavigationBar(
-              onTap: (index) {},
-              selectedTab: 0,
+              onTap: (index) {
+                _controller.onBottomNavigationTabChange(index);
+              },
+              selectedTab: _controller.selectedBottomNavigationTab,
             ),
             body: SafeArea(
               child: LayoutBuilder(
@@ -55,32 +57,72 @@ class HomePage extends StatelessWidget {
                               width: double.infinity,
                             ),
                           ),
-                          Positioned(
-                            right: constraints.maxWidth * 0.05,
-                            child: DoorLock(
-                              isLocked: _controller.isRightDoorLocked,
-                              onPress: _controller.updateRightDoor,
+                          AnimatedPositioned(
+                            duration: defaultDuration,
+                            right: _controller.selectedBottomNavigationTab == 0
+                                ? constraints.maxWidth * 0.05
+                                : constraints.maxWidth * 0.5,
+                            child: AnimatedOpacity(
+                              duration: defaultDuration,
+                              opacity:
+                                  _controller.selectedBottomNavigationTab == 0
+                                      ? 1.0
+                                      : 0.0,
+                              child: DoorLock(
+                                isLocked: _controller.isRightDoorLocked,
+                                onPress: _controller.updateRightDoor,
+                              ),
                             ),
                           ),
-                          Positioned(
-                            left: constraints.maxWidth * 0.05,
-                            child: DoorLock(
-                              isLocked: _controller.isLeftDoorLocked,
-                              onPress: _controller.updateLeftDoor,
+                          AnimatedPositioned(
+                            duration: defaultDuration,
+                            left: _controller.selectedBottomNavigationTab == 0
+                                ? constraints.maxWidth * 0.05
+                                : constraints.maxWidth * 0.5,
+                            child: AnimatedOpacity(
+                              duration: defaultDuration,
+                              opacity:
+                                  _controller.selectedBottomNavigationTab == 0
+                                      ? 1.0
+                                      : 0.0,
+                              child: DoorLock(
+                                isLocked: _controller.isLeftDoorLocked,
+                                onPress: _controller.updateLeftDoor,
+                              ),
                             ),
                           ),
-                          Positioned(
-                            top: constraints.maxHeight * 0.13,
-                            child: DoorLock(
-                              isLocked: _controller.isBonnetDoorLocked,
-                              onPress: _controller.updateBonnetDoor,
+                          AnimatedPositioned(
+                            duration: defaultDuration,
+                            top: _controller.selectedBottomNavigationTab == 0
+                                ? constraints.maxHeight * 0.13
+                                : constraints.maxHeight * 0.5,
+                            child: AnimatedOpacity(
+                              duration: defaultDuration,
+                              opacity:
+                                  _controller.selectedBottomNavigationTab == 0
+                                      ? 1.0
+                                      : 0.0,
+                              child: DoorLock(
+                                isLocked: _controller.isBonnetDoorLocked,
+                                onPress: _controller.updateBonnetDoor,
+                              ),
                             ),
                           ),
-                          Positioned(
-                            bottom: constraints.maxHeight * 0.17,
-                            child: DoorLock(
-                              isLocked: _controller.isTrunkLocked,
-                              onPress: _controller.updateTrunkDoor,
+                          AnimatedPositioned(
+                            duration: defaultDuration,
+                            bottom: _controller.selectedBottomNavigationTab == 0
+                                ? constraints.maxHeight * 0.17
+                                : constraints.maxHeight * 0.5,
+                            child: AnimatedOpacity(
+                              duration: defaultDuration,
+                              opacity:
+                                  _controller.selectedBottomNavigationTab == 0
+                                      ? 1.0
+                                      : 0.0,
+                              child: DoorLock(
+                                isLocked: _controller.isTrunkLocked,
+                                onPress: _controller.updateTrunkDoor,
+                              ),
                             ),
                           ),
                         ],

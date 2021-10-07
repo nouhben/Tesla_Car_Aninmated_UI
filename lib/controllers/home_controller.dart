@@ -6,6 +6,14 @@ class HomeController with ChangeNotifier {
   bool isBonnetDoorLocked = true;
   bool isTrunkLocked = true;
 
+  int selectedBottomNavigationTab = 0;
+  void onBottomNavigationTabChange(int index) {
+    if (index != selectedBottomNavigationTab) {
+      selectedBottomNavigationTab = index;
+      notifyListeners();
+    }
+  }
+
   void updateRightDoor() {
     isRightDoorLocked = !isRightDoorLocked;
     notifyListeners();
