@@ -23,22 +23,65 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.black,
       ),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   final HomeController _controller = HomeController();
+  late AnimationController _batteryAnimationController;
+  late Animation<double> _batteryAnimation;
+  void setupBatteryAnimationController() {
+    _batteryAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _batteryAnimation = CurvedAnimation(
+      parent: _batteryAnimationController,
+      // Starts from the beginning to half i.e 300ms
+      curve: const Interval(0.0, 0.5),
+    );
+  }
+
+  @override
+  void initState() {
+    setupBatteryAnimationController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _batteryAnimationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: _controller,
+        animation: Listenable.merge([_controller, _batteryAnimationController]),
         builder: (context, snapshot) {
           return Scaffold(
             bottomNavigationBar: TeslaBottomNavigationBar(
               onTap: (index) {
+                // We need to start the battery animation once the user taps on battery tab
+                // But nothing happend untill we add the controller to the animationBuilder
+                // we have multiple controllers so we merge theme sincxe they bot are listenbales
+                if (index == 1) {
+                  _batteryAnimationController.forward();
+                } else {
+                  if (_controller.selectedBottomNavigationTab == 1) {
+                    _batteryAnimationController.reverse();
+                  }
+                }
                 _controller.onBottomNavigationTabChange(index);
               },
               selectedTab: _controller.selectedBottomNavigationTab,
@@ -123,10 +166,8 @@ class HomePage extends StatelessWidget {
                     ),
                     // Now that the Locks will hide
                     // We show the middle battery so another hidden animated opacity and position
-                    AnimatedOpacity(
-                      duration: defaultDuration,
-                      opacity:
-                          _controller.selectedBottomNavigationTab == 0 ? 0 : 1,
+                    Opacity(
+                      opacity: _batteryAnimation.value,
                       child: SvgPicture.asset(
                         'assets/icons/Battery.svg',
                         width: constraints.maxWidth * 0.4,
