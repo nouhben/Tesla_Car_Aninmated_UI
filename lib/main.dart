@@ -45,88 +45,96 @@ class HomePage extends StatelessWidget {
             ),
             body: SafeArea(
               child: LayoutBuilder(
-                  builder: (context, constraints) => Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: constraints.maxHeight * 0.1,
-                            ),
-                            child: SvgPicture.asset(
-                              'assets/icons/Car.svg',
-                              width: double.infinity,
-                            ),
-                          ),
-                          AnimatedPositioned(
-                            duration: defaultDuration,
-                            right: _controller.selectedBottomNavigationTab == 0
-                                ? constraints.maxWidth * 0.05
-                                : constraints.maxWidth * 0.5,
-                            child: AnimatedOpacity(
-                              duration: defaultDuration,
-                              opacity:
-                                  _controller.selectedBottomNavigationTab == 0
-                                      ? 1.0
-                                      : 0.0,
-                              child: DoorLock(
-                                isLocked: _controller.isRightDoorLocked,
-                                onPress: _controller.updateRightDoor,
-                              ),
-                            ),
-                          ),
-                          AnimatedPositioned(
-                            duration: defaultDuration,
-                            left: _controller.selectedBottomNavigationTab == 0
-                                ? constraints.maxWidth * 0.05
-                                : constraints.maxWidth * 0.5,
-                            child: AnimatedOpacity(
-                              duration: defaultDuration,
-                              opacity:
-                                  _controller.selectedBottomNavigationTab == 0
-                                      ? 1.0
-                                      : 0.0,
-                              child: DoorLock(
-                                isLocked: _controller.isLeftDoorLocked,
-                                onPress: _controller.updateLeftDoor,
-                              ),
-                            ),
-                          ),
-                          AnimatedPositioned(
-                            duration: defaultDuration,
-                            top: _controller.selectedBottomNavigationTab == 0
-                                ? constraints.maxHeight * 0.13
-                                : constraints.maxHeight * 0.5,
-                            child: AnimatedOpacity(
-                              duration: defaultDuration,
-                              opacity:
-                                  _controller.selectedBottomNavigationTab == 0
-                                      ? 1.0
-                                      : 0.0,
-                              child: DoorLock(
-                                isLocked: _controller.isBonnetDoorLocked,
-                                onPress: _controller.updateBonnetDoor,
-                              ),
-                            ),
-                          ),
-                          AnimatedPositioned(
-                            duration: defaultDuration,
-                            bottom: _controller.selectedBottomNavigationTab == 0
-                                ? constraints.maxHeight * 0.17
-                                : constraints.maxHeight * 0.5,
-                            child: AnimatedOpacity(
-                              duration: defaultDuration,
-                              opacity:
-                                  _controller.selectedBottomNavigationTab == 0
-                                      ? 1.0
-                                      : 0.0,
-                              child: DoorLock(
-                                isLocked: _controller.isTrunkLocked,
-                                onPress: _controller.updateTrunkDoor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )),
+                builder: (context, constraints) => Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: constraints.maxHeight * 0.1,
+                      ),
+                      child: SvgPicture.asset(
+                        'assets/icons/Car.svg',
+                        width: double.infinity,
+                      ),
+                    ),
+                    AnimatedPositioned(
+                      duration: defaultDuration,
+                      right: _controller.selectedBottomNavigationTab == 0
+                          ? constraints.maxWidth * 0.05
+                          : constraints.maxWidth * 0.5,
+                      child: AnimatedOpacity(
+                        duration: defaultDuration,
+                        opacity: _controller.selectedBottomNavigationTab == 0
+                            ? 1.0
+                            : 0.0,
+                        child: DoorLock(
+                          isLocked: _controller.isRightDoorLocked,
+                          onPress: _controller.updateRightDoor,
+                        ),
+                      ),
+                    ),
+                    AnimatedPositioned(
+                      duration: defaultDuration,
+                      left: _controller.selectedBottomNavigationTab == 0
+                          ? constraints.maxWidth * 0.05
+                          : constraints.maxWidth * 0.5,
+                      child: AnimatedOpacity(
+                        duration: defaultDuration,
+                        opacity: _controller.selectedBottomNavigationTab == 0
+                            ? 1.0
+                            : 0.0,
+                        child: DoorLock(
+                          isLocked: _controller.isLeftDoorLocked,
+                          onPress: _controller.updateLeftDoor,
+                        ),
+                      ),
+                    ),
+                    AnimatedPositioned(
+                      duration: defaultDuration,
+                      top: _controller.selectedBottomNavigationTab == 0
+                          ? constraints.maxHeight * 0.13
+                          : constraints.maxHeight * 0.5,
+                      child: AnimatedOpacity(
+                        duration: defaultDuration,
+                        opacity: _controller.selectedBottomNavigationTab == 0
+                            ? 1.0
+                            : 0.0,
+                        child: DoorLock(
+                          isLocked: _controller.isBonnetDoorLocked,
+                          onPress: _controller.updateBonnetDoor,
+                        ),
+                      ),
+                    ),
+                    AnimatedPositioned(
+                      duration: defaultDuration,
+                      bottom: _controller.selectedBottomNavigationTab == 0
+                          ? constraints.maxHeight * 0.17
+                          : constraints.maxHeight * 0.5,
+                      child: AnimatedOpacity(
+                        duration: defaultDuration,
+                        opacity: _controller.selectedBottomNavigationTab == 0
+                            ? 1.0
+                            : 0.0,
+                        child: DoorLock(
+                          isLocked: _controller.isTrunkLocked,
+                          onPress: _controller.updateTrunkDoor,
+                        ),
+                      ),
+                    ),
+                    // Now that the Locks will hide
+                    // We show the middle battery so another hidden animated opacity and position
+                    AnimatedOpacity(
+                      duration: defaultDuration,
+                      opacity:
+                          _controller.selectedBottomNavigationTab == 0 ? 0 : 1,
+                      child: SvgPicture.asset(
+                        'assets/icons/Battery.svg',
+                        width: constraints.maxWidth * 0.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         });
