@@ -41,6 +41,8 @@ class _HomePageState extends State<HomePage>
   final HomeController _controller = HomeController();
   late AnimationController _batteryAnimationController;
   late Animation<double> _batteryAnimation;
+  late Animation<double> _batteryInfoAnimation;
+
   void setupBatteryAnimationController() {
     _batteryAnimationController = AnimationController(
       vsync: this,
@@ -50,6 +52,10 @@ class _HomePageState extends State<HomePage>
       parent: _batteryAnimationController,
       // Starts from the beginning to half i.e 300ms
       curve: const Interval(0.0, 0.5),
+    );
+    _batteryInfoAnimation = CurvedAnimation(
+      parent: _batteryAnimationController,
+      curve: const Interval(0.6, 1.0),
     );
   }
 
@@ -176,7 +182,16 @@ class _HomePageState extends State<HomePage>
                       ),
                     ),
                     //Info
-                    BatteryInfo(constraints: constraints),
+                    Positioned(
+                      width: constraints.maxWidth,
+                      height: constraints.maxHeight,
+                      top: 50.0 * (1 - _batteryInfoAnimation.value),
+                      child: Opacity(
+                        opacity: _batteryInfoAnimation.value,
+                        child: BatteryInfo(constraints: constraints),
+                      ),
+                    ),
+                    //After a delay show the battery info
                   ],
                 ),
               ),
