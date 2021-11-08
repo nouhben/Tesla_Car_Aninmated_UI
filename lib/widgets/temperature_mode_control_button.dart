@@ -19,11 +19,8 @@ class TemperatureModeControlButton extends StatelessWidget {
   final Color activeColor;
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onPress,
-      customBorder: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(66.0),
-      ),
       child: Column(
         children: [
           AnimatedContainer(
@@ -43,13 +40,7 @@ class TemperatureModeControlButton extends StatelessWidget {
               color: isActive ? activeColor : Colors.white38,
               fontSize: 16.0,
             ),
-            child: Text(
-              title.toUpperCase(),
-              // style: TextStyle(
-              //   color: isActive ? activeColor : Colors.white38,
-              //   fontSize: 16.0,
-              // ),
-            ),
+            child: Text(title.toUpperCase()),
           ),
         ],
       ),

@@ -70,174 +70,260 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: Listenable.merge([
-          _controller,
-          _batteryAnimationController,
-          _tempAnimationController,
-        ]),
-        builder: (context, snapshot) {
-          return Scaffold(
-            bottomNavigationBar: TeslaBottomNavigationBar(
-              onTap: (index) {
-                // We need to start the battery animation once the user taps on battery tab
-                // But nothing happen until we add the controller to the animationBuilder
-                // we have multiple controllers so we merge theme since they both are listenable
-                if (index == 1) {
-                  _batteryAnimationController.forward();
-                } else {
-                  if (_controller.selectedBottomNavigationTab == 1) {
-                    _batteryAnimationController.reverse(from: 0.7);
-                  }
+      animation: Listenable.merge([
+        _controller,
+        _batteryAnimationController,
+        _tempAnimationController,
+      ]),
+      builder: (context, snapshot) {
+        return Scaffold(
+          bottomNavigationBar: TeslaBottomNavigationBar(
+            onTap: (index) {
+              // We need to start the battery animation once the user taps on battery tab
+              // But nothing happen until we add the controller to the animationBuilder
+              // we have multiple controllers so we merge theme since they both are listenable
+              if (index == 1) {
+                _batteryAnimationController.forward();
+              } else {
+                if (_controller.selectedBottomNavigationTab == 1) {
+                  _batteryAnimationController.reverse(from: 0.7);
                 }
-                if (index == 2) {
-                  _tempAnimationController.forward();
-                } else {
-                  if (_controller.selectedBottomNavigationTab == 2) {
-                    _tempAnimationController.reverse(from: 0.4);
-                  }
+              }
+              if (index == 2) {
+                _tempAnimationController.forward();
+              } else {
+                if (_controller.selectedBottomNavigationTab == 2) {
+                  _tempAnimationController.reverse(from: 0.4);
                 }
-                _controller.onBottomNavigationTabChange(index);
-              },
-              selectedTab: _controller.selectedBottomNavigationTab,
-            ),
-            body: SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) => Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      height: constraints.maxHeight,
-                      width: constraints.maxWidth,
-                    ),
-                    AnimatedPositioned(
-                      height: constraints.maxHeight,
-                      width: constraints.maxWidth,
-                      left: constraints.maxWidth / 2 * _carShiftAnimation.value,
-                      duration: defaultDuration,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: constraints.maxHeight * 0.1,
-                        ),
-                        child: SvgPicture.asset(
-                          'assets/icons/Car.svg',
-                          width: double.infinity,
-                        ),
+              }
+              _controller.onBottomNavigationTabChange(index);
+            },
+            selectedTab: _controller.selectedBottomNavigationTab,
+          ),
+          body: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) => Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    height: constraints.maxHeight,
+                    width: constraints.maxWidth,
+                  ),
+                  AnimatedPositioned(
+                    height: constraints.maxHeight,
+                    width: constraints.maxWidth,
+                    left: constraints.maxWidth / 2 * _carShiftAnimation.value,
+                    duration: defaultDuration,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: constraints.maxHeight * 0.1,
                       ),
-                    ),
-                    AnimatedPositioned(
-                      duration: defaultDuration,
-                      right: _controller.selectedBottomNavigationTab == 0
-                          ? constraints.maxWidth * 0.05
-                          : constraints.maxWidth * 0.5,
-                      child: AnimatedOpacity(
-                        duration: defaultDuration,
-                        opacity: _controller.selectedBottomNavigationTab == 0
-                            ? 1.0
-                            : 0.0,
-                        child: DoorLock(
-                          isLocked: _controller.isRightDoorLocked,
-                          onPress: _controller.updateRightDoor,
-                        ),
-                      ),
-                    ),
-                    AnimatedPositioned(
-                      duration: defaultDuration,
-                      left: _controller.selectedBottomNavigationTab == 0
-                          ? constraints.maxWidth * 0.05
-                          : constraints.maxWidth * 0.5,
-                      child: AnimatedOpacity(
-                        duration: defaultDuration,
-                        opacity: _controller.selectedBottomNavigationTab == 0
-                            ? 1.0
-                            : 0.0,
-                        child: DoorLock(
-                          isLocked: _controller.isLeftDoorLocked,
-                          onPress: _controller.updateLeftDoor,
-                        ),
-                      ),
-                    ),
-                    AnimatedPositioned(
-                      duration: defaultDuration,
-                      top: _controller.selectedBottomNavigationTab == 0
-                          ? constraints.maxHeight * 0.13
-                          : constraints.maxHeight * 0.5,
-                      child: AnimatedOpacity(
-                        duration: defaultDuration,
-                        opacity: _controller.selectedBottomNavigationTab == 0
-                            ? 1.0
-                            : 0.0,
-                        child: DoorLock(
-                          isLocked: _controller.isBonnetDoorLocked,
-                          onPress: _controller.updateBonnetDoor,
-                        ),
-                      ),
-                    ),
-                    AnimatedPositioned(
-                      duration: defaultDuration,
-                      bottom: _controller.selectedBottomNavigationTab == 0
-                          ? constraints.maxHeight * 0.17
-                          : constraints.maxHeight * 0.5,
-                      child: AnimatedOpacity(
-                        duration: defaultDuration,
-                        opacity: _controller.selectedBottomNavigationTab == 0
-                            ? 1.0
-                            : 0.0,
-                        child: DoorLock(
-                          isLocked: _controller.isTrunkLocked,
-                          onPress: _controller.updateTrunkDoor,
-                        ),
-                      ),
-                    ),
-                    // Now that the Locks will hide
-                    // We show the middle battery so another hidden animated opacity and position
-                    //Battery
-                    Opacity(
-                      opacity: _batteryAnimation.value,
                       child: SvgPicture.asset(
-                        'assets/icons/Battery.svg',
-                        width: constraints.maxWidth * 0.4,
+                        'assets/icons/Car.svg',
+                        width: double.infinity,
                       ),
                     ),
-                    //Info Battery
-                    Positioned(
-                      width: constraints.maxWidth,
-                      height: constraints.maxHeight,
-                      top: 50.0 * (1 - _batteryInfoAnimation.value),
-                      child: Opacity(
-                        opacity: _batteryInfoAnimation.value,
-                        child: BatteryInfo(constraints: constraints),
+                  ),
+                  AnimatedPositioned(
+                    duration: defaultDuration,
+                    right: _controller.selectedBottomNavigationTab == 0
+                        ? constraints.maxWidth * 0.05
+                        : constraints.maxWidth * 0.5,
+                    child: AnimatedOpacity(
+                      duration: defaultDuration,
+                      opacity: _controller.selectedBottomNavigationTab == 0
+                          ? 1.0
+                          : 0.0,
+                      child: DoorLock(
+                        isLocked: _controller.isRightDoorLocked,
+                        onPress: _controller.updateRightDoor,
                       ),
                     ),
-                    //After a delay show the battery info
-                    // Temp
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            TemperatureModeControlButton(
-                              title: 'cool',
-                              svgIconPath: 'assets/icons/coolShape.svg',
-                              activeColor: primaryColor,
-                              isActive: _controller.isCoolSelected,
-                              onPress: _controller.updateCoolSelected,
-                            ),
-                            const SizedBox(width: defaultPadding),
-                            TemperatureModeControlButton(
-                              title: 'heat',
-                              svgIconPath: 'assets/icons/heatShape.svg',
-                              activeColor: Colors.red,
-                              isActive: !_controller.isCoolSelected,
-                              onPress: _controller.updateCoolSelected,
-                            ),
-                          ],
-                        ),
-                      ],
+                  ),
+                  AnimatedPositioned(
+                    duration: defaultDuration,
+                    left: _controller.selectedBottomNavigationTab == 0
+                        ? constraints.maxWidth * 0.05
+                        : constraints.maxWidth * 0.5,
+                    child: AnimatedOpacity(
+                      duration: defaultDuration,
+                      opacity: _controller.selectedBottomNavigationTab == 0
+                          ? 1.0
+                          : 0.0,
+                      child: DoorLock(
+                        isLocked: _controller.isLeftDoorLocked,
+                        onPress: _controller.updateLeftDoor,
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                  AnimatedPositioned(
+                    duration: defaultDuration,
+                    top: _controller.selectedBottomNavigationTab == 0
+                        ? constraints.maxHeight * 0.13
+                        : constraints.maxHeight * 0.5,
+                    child: AnimatedOpacity(
+                      duration: defaultDuration,
+                      opacity: _controller.selectedBottomNavigationTab == 0
+                          ? 1.0
+                          : 0.0,
+                      child: DoorLock(
+                        isLocked: _controller.isBonnetDoorLocked,
+                        onPress: _controller.updateBonnetDoor,
+                      ),
+                    ),
+                  ),
+                  AnimatedPositioned(
+                    duration: defaultDuration,
+                    bottom: _controller.selectedBottomNavigationTab == 0
+                        ? constraints.maxHeight * 0.17
+                        : constraints.maxHeight * 0.5,
+                    child: AnimatedOpacity(
+                      duration: defaultDuration,
+                      opacity: _controller.selectedBottomNavigationTab == 0
+                          ? 1.0
+                          : 0.0,
+                      child: DoorLock(
+                        isLocked: _controller.isTrunkLocked,
+                        onPress: _controller.updateTrunkDoor,
+                      ),
+                    ),
+                  ),
+                  // Now that the Locks will hide
+                  // We show the middle battery so another hidden animated opacity and position
+                  //Battery
+                  Opacity(
+                    opacity: _batteryAnimation.value,
+                    child: SvgPicture.asset(
+                      'assets/icons/Battery.svg',
+                      width: constraints.maxWidth * 0.4,
+                    ),
+                  ),
+                  //Info Battery
+                  Positioned(
+                    width: constraints.maxWidth,
+                    height: constraints.maxHeight,
+                    top: 50.0 * (1 - _batteryInfoAnimation.value),
+                    child: Opacity(
+                      opacity: _batteryInfoAnimation.value,
+                      child: BatteryInfo(constraints: constraints),
+                    ),
+                  ),
+                  //After a delay show the battery info
+                  // Temp
+                  TemperatureDetails(controller: _controller),
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
+  }
+}
+
+class TemperatureDetails extends StatelessWidget {
+  const TemperatureDetails({
+    Key? key,
+    required HomeController controller,
+  })  : _controller = controller,
+        super(key: key);
+
+  final HomeController _controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(defaultPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 140.0,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TemperatureModeControlButton(
+                  title: 'cool',
+                  svgIconPath: 'assets/icons/coolShape.svg',
+                  activeColor: primaryColor,
+                  isActive: _controller.isCoolSelected,
+                  onPress: _controller.updateCoolSelected,
+                ),
+                const SizedBox(width: defaultPadding),
+                TemperatureModeControlButton(
+                  title: 'heat',
+                  svgIconPath: 'assets/icons/heatShape.svg',
+                  activeColor: redColor,
+                  isActive: !_controller.isCoolSelected,
+                  onPress: _controller.updateCoolSelected,
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          Column(
+            children: [
+              IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {},
+                icon: const Icon(Icons.arrow_drop_up, size: 48.0),
+              ),
+              const Text(
+                '29' ' \u2103',
+                style: TextStyle(
+                  fontSize: 76.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {},
+                icon: const Icon(Icons.arrow_drop_down, size: 48.0),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Text(
+            'current temperature'.toUpperCase(),
+            style: Theme.of(context).textTheme.caption,
+          ),
+          const SizedBox(height: defaultPadding),
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'inside'.toUpperCase(),
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                  Text(
+                    '29' ' \u2103',
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                ],
+              ),
+              const SizedBox(width: defaultPadding),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'outside'.toUpperCase(),
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                  Text(
+                    '31' ' \u2103',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline5!
+                        .copyWith(color: Colors.white54),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
