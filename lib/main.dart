@@ -36,8 +36,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final HomeController _controller = HomeController();
   late AnimationController _batteryAnimationController;
   late Animation<double> _batteryAnimation;
@@ -59,34 +58,63 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  //Episode 3
+  late AnimationController _tempAnimationController;
+  //Up to this point we are using SingleTickerProvider
+  //so let's change it to be able to use multiple controllers
+  late Animation<double> _carShiftAnimation;
+  void setupTempAnimationController() {
+    _tempAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _carShiftAnimation = CurvedAnimation(
+      parent: _tempAnimationController,
+      curve: const Interval(0.2, 0.4),
+    );
+  }
+
   @override
   void initState() {
     setupBatteryAnimationController();
+    setupTempAnimationController();
     super.initState();
   }
 
   @override
   void dispose() {
     _batteryAnimationController.dispose();
+    _tempAnimationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: Listenable.merge([_controller, _batteryAnimationController]),
+        animation: Listenable.merge([
+          _controller,
+          _batteryAnimationController,
+          _tempAnimationController,
+        ]),
         builder: (context, snapshot) {
           return Scaffold(
             bottomNavigationBar: TeslaBottomNavigationBar(
               onTap: (index) {
                 // We need to start the battery animation once the user taps on battery tab
-                // But nothing happend untill we add the controller to the animationBuilder
-                // we have multiple controllers so we merge theme sincxe they bot are listenbales
+                // But nothing happen until we add the controller to the animationBuilder
+                // we have multiple controllers so we merge theme since they both are listenable
                 if (index == 1) {
                   _batteryAnimationController.forward();
                 } else {
                   if (_controller.selectedBottomNavigationTab == 1) {
-                    _batteryAnimationController.reverse();
+                    _batteryAnimationController.reverse(from: 0.7);
+                  }
+                }
+                if (index == 2) {
+                  _tempAnimationController.forward();
+                } else {
+                  if (_controller.selectedBottomNavigationTab == 2) {
+                    _tempAnimationController.reverse(from: 0.4);
                   }
                 }
                 _controller.onBottomNavigationTabChange(index);
@@ -98,13 +126,23 @@ class _HomePageState extends State<HomePage>
                 builder: (context, constraints) => Stack(
                   alignment: Alignment.center,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: constraints.maxHeight * 0.1,
-                      ),
-                      child: SvgPicture.asset(
-                        'assets/icons/Car.svg',
-                        width: double.infinity,
+                    SizedBox(
+                      height: constraints.maxHeight,
+                      width: constraints.maxWidth,
+                    ),
+                    AnimatedPositioned(
+                      height: constraints.maxHeight,
+                      width: constraints.maxWidth,
+                      left: constraints.maxWidth / 2 * _carShiftAnimation.value,
+                      duration: defaultDuration,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: constraints.maxHeight * 0.1,
+                        ),
+                        child: SvgPicture.asset(
+                          'assets/icons/Car.svg',
+                          width: double.infinity,
+                        ),
                       ),
                     ),
                     AnimatedPositioned(
