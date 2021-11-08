@@ -33,4 +33,11 @@ class HomeController with ChangeNotifier {
     isTrunkLocked = !isTrunkLocked;
     notifyListeners();
   }
+
+  bool isCoolSelected = true;
+
+  void updateCoolSelected() {
+    isCoolSelected = !isCoolSelected;
+    notifyListeners();
+  }
 }
