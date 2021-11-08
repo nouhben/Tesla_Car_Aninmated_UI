@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tesla_annimation_ui/controllers/home_controller.dart';
 import 'package:tesla_annimation_ui/shared/constants.dart';
 import 'package:tesla_annimation_ui/widgets/door_lock.dart';
+import 'package:tesla_annimation_ui/widgets/temperature_details.dart';
 import 'package:tesla_annimation_ui/widgets/temperature_mode_control_button.dart';
 import 'package:tesla_annimation_ui/widgets/tesla_bottom_navigation_bar.dart';
 
@@ -42,6 +43,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   //Up to this point we are using SingleTickerProvider
   //so let's change it to be able to use multiple controllers
   late Animation<double> _carShiftAnimation;
+  late Animation<double> _tempInfoAnimation;
+  late Animation<double> _coolGlowAnimation;
+
   void setupTempAnimationController() {
     _tempAnimationController = AnimationController(
       vsync: this,
@@ -50,6 +54,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _carShiftAnimation = CurvedAnimation(
       parent: _tempAnimationController,
       curve: const Interval(0.2, 0.4),
+    );
+    _tempInfoAnimation = CurvedAnimation(
+      parent: _tempAnimationController,
+      curve: const Interval(0.45, 0.65),
+    );
+    _coolGlowAnimation = CurvedAnimation(
+      parent: _tempAnimationController,
+      curve: const Interval(0.7, 1.0),
     );
   }
 
@@ -210,120 +222,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                   //After a delay show the battery info
                   // Temp
-                  TemperatureDetails(controller: _controller),
+
+                  Positioned(
+                    height: constraints.maxHeight,
+                    width: constraints.maxWidth,
+                    top: 50.0 * (1 - _tempInfoAnimation.value),
+                    child: Opacity(
+                      opacity: _tempInfoAnimation.value,
+                      child: TemperatureDetails(controller: _controller),
+                    ),
+                  ),
+                  Positioned(
+                    right: (1 - _coolGlowAnimation.value) * -180.0,
+                    child: AnimatedSwitcher(
+                      duration: defaultDuration,
+                      child: _controller.isCoolSelected
+                          ? Image.asset(
+                              'assets/images/Cool_glow_2.png',
+                              width: 220.0,
+                              key: UniqueKey(),
+                            )
+                          : Image.asset(
+                              'assets/images/Hot_glow_4.png',
+                              width: 220.0,
+                              key: UniqueKey(),
+                            ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         );
       },
-    );
-  }
-}
-
-class TemperatureDetails extends StatelessWidget {
-  const TemperatureDetails({
-    Key? key,
-    required HomeController controller,
-  })  : _controller = controller,
-        super(key: key);
-
-  final HomeController _controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(defaultPadding),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 140.0,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TemperatureModeControlButton(
-                  title: 'cool',
-                  svgIconPath: 'assets/icons/coolShape.svg',
-                  activeColor: primaryColor,
-                  isActive: _controller.isCoolSelected,
-                  onPress: _controller.updateCoolSelected,
-                ),
-                const SizedBox(width: defaultPadding),
-                TemperatureModeControlButton(
-                  title: 'heat',
-                  svgIconPath: 'assets/icons/heatShape.svg',
-                  activeColor: redColor,
-                  isActive: !_controller.isCoolSelected,
-                  onPress: _controller.updateCoolSelected,
-                ),
-              ],
-            ),
-          ),
-          const Spacer(),
-          Column(
-            children: [
-              IconButton(
-                padding: EdgeInsets.zero,
-                onPressed: () {},
-                icon: const Icon(Icons.arrow_drop_up, size: 48.0),
-              ),
-              const Text(
-                '29' ' \u2103',
-                style: TextStyle(
-                  fontSize: 76.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                padding: EdgeInsets.zero,
-                onPressed: () {},
-                icon: const Icon(Icons.arrow_drop_down, size: 48.0),
-              ),
-            ],
-          ),
-          const Spacer(),
-          Text(
-            'current temperature'.toUpperCase(),
-            style: Theme.of(context).textTheme.caption,
-          ),
-          const SizedBox(height: defaultPadding),
-          Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'inside'.toUpperCase(),
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                  Text(
-                    '29' ' \u2103',
-                    style: Theme.of(context).textTheme.headline5,
-                  ),
-                ],
-              ),
-              const SizedBox(width: defaultPadding),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'outside'.toUpperCase(),
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                  Text(
-                    '31' ' \u2103',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline5!
-                        .copyWith(color: Colors.white54),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }
