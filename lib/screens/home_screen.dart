@@ -202,6 +202,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                   // Now that the Locks will hide
                   // We show the middle battery so another hidden animated opacity and position
+
                   //Battery
                   Opacity(
                     opacity: _batteryAnimation.value,
@@ -222,7 +223,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                   //After a delay show the battery info
                   // Temp
-
                   Positioned(
                     height: constraints.maxHeight,
                     width: constraints.maxWidth,
