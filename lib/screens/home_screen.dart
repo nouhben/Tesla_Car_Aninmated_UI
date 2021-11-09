@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:tesla_annimation_ui/controllers/home_controller.dart';
+import 'package:tesla_annimation_ui/models/tyre_psi.dart';
 import 'package:tesla_annimation_ui/shared/constants.dart';
 import 'package:tesla_annimation_ui/widgets/door_lock.dart';
 import 'package:tesla_annimation_ui/widgets/temperature_details.dart';
-import 'package:tesla_annimation_ui/widgets/temperature_mode_control_button.dart';
 import 'package:tesla_annimation_ui/widgets/tesla_bottom_navigation_bar.dart';
 
 import 'battery_info.dart';
@@ -65,10 +66,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  // Episode 4 tires
+  late AnimationController _tiresAnimationController;
+  late Animation<double> _tireInfoAnimation;
+  void _setupTiresAnimationController() {
+    _tiresAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _tireInfoAnimation = CurvedAnimation(
+      parent: _tiresAnimationController,
+      curve: const Interval(0.6, 1.0),
+    );
+  }
+
   @override
   void initState() {
     setupBatteryAnimationController();
     setupTempAnimationController();
+    _setupTiresAnimationController();
     super.initState();
   }
 
@@ -76,17 +92,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void dispose() {
     _batteryAnimationController.dispose();
     _tempAnimationController.dispose();
+    _tiresAnimationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([
-        _controller,
-        _batteryAnimationController,
-        _tempAnimationController,
-      ]),
+      animation: Listenable.merge(
+        [
+          _controller,
+          _batteryAnimationController,
+          _tempAnimationController,
+          _tiresAnimationController,
+        ],
+      ),
       builder: (context, snapshot) {
         return Scaffold(
           bottomNavigationBar: TeslaBottomNavigationBar(
@@ -106,6 +126,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               } else {
                 if (_controller.selectedBottomNavigationTab == 2) {
                   _tempAnimationController.reverse(from: 0.4);
+                }
+              }
+              if (index == 3) {
+                _tiresAnimationController.forward();
+              } else {
+                if (_controller.selectedBottomNavigationTab == 3) {
+                  _tiresAnimationController.reverse(from: 0.9);
                 }
               }
               _controller.onBottomNavigationTabChange(index);
@@ -249,12 +276,136 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                     ),
                   ),
+
+                  // Tires
+                  Positioned(
+                    left: 10,
+                    top: 20,
+                    height: constraints.maxHeight *
+                        0.45 *
+                        (_tireInfoAnimation.value),
+                    width: constraints.maxWidth *
+                        0.45 *
+                        (_tireInfoAnimation.value),
+                    child: Opacity(
+                      child: TyrePsiCard(tyrePsi: demoPsiList.first),
+                      opacity: _tireInfoAnimation.value,
+                    ),
+                  ),
+                  AnimatedPositioned(
+                    duration: defaultDuration,
+                    right: 10,
+                    top: 20,
+                    height: constraints.maxHeight *
+                        0.45 *
+                        (_tireInfoAnimation.value),
+                    width: constraints.maxWidth *
+                        0.45 *
+                        (_tireInfoAnimation.value),
+                    child: Opacity(
+                      child: TyrePsiCard(tyrePsi: demoPsiList[1]),
+                      opacity: _tireInfoAnimation.value,
+                    ),
+                  ),
+                  AnimatedPositioned(
+                    duration: defaultDuration * 1.3,
+                    left: 10,
+                    bottom: 20,
+                    height: constraints.maxHeight *
+                        0.45 *
+                        (_tireInfoAnimation.value),
+                    width: constraints.maxWidth *
+                        0.45 *
+                        (_tireInfoAnimation.value),
+                    child: Opacity(
+                      child: TyrePsiCard(tyrePsi: demoPsiList[2]),
+                      opacity: _tireInfoAnimation.value,
+                    ),
+                  ),
+                  AnimatedPositioned(
+                    duration: defaultDuration * 1.5,
+                    right: 10,
+                    bottom: 20,
+                    height: constraints.maxHeight *
+                        0.45 *
+                        (_tireInfoAnimation.value),
+                    width: constraints.maxWidth *
+                        0.45 *
+                        (_tireInfoAnimation.value),
+                    child: Opacity(
+                      child: TyrePsiCard(tyrePsi: demoPsiList[3]),
+                      opacity: _tireInfoAnimation.value,
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class TyrePsiCard extends StatelessWidget {
+  const TyrePsiCard({
+    Key? key,
+    required this.tyrePsi,
+  }) : super(key: key);
+
+  final TyrePsi tyrePsi;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(defaultPadding),
+      decoration: BoxDecoration(
+        color: tyrePsi.isLowPressure
+            ? redColor.withOpacity(0.2)
+            : primaryColor.withOpacity(0.2),
+        border: Border.all(
+          color: tyrePsi.isLowPressure ? redColor : primaryColor,
+          width: 2.0,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            tyrePsi.psi.toString() + 'Psi',
+            style: Theme.of(context).textTheme.headline5!.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: defaultPadding),
+          Text(
+            tyrePsi.temp.toString() + '\u2103',
+            style: Theme.of(context).textTheme.caption,
+          ),
+          tyrePsi.isLowPressure ? const Spacer() : const SizedBox.shrink(),
+          tyrePsi.isLowPressure
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'LOW'.toUpperCase(),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline3!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'PRESSURE'.toUpperCase(),
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white54,
+                            fontSize: 16.0,
+                          ),
+                    ),
+                  ],
+                )
+              : const SizedBox.shrink(),
+        ],
+      ),
     );
   }
 }
