@@ -12,14 +12,14 @@ class BatteryInfo extends StatelessWidget {
     return Column(
       children: [
         Text(
-          '250 mi',
+          '280 KM',
           style: Theme.of(context)
               .textTheme
               .headline3!
               .copyWith(color: Colors.white),
         ),
         const Text(
-          '68%',
+          '81%',
           style: TextStyle(fontSize: 24.0),
         ),
         const Spacer(),
@@ -40,7 +40,7 @@ class BatteryInfo extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
               Text(
-                "26 mi/hr",
+                "26 km/hr",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(

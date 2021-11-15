@@ -40,4 +40,22 @@ class HomeController with ChangeNotifier {
     isCoolSelected = !isCoolSelected;
     notifyListeners();
   }
+
+  bool isShowTyres = false;
+
+  /// This method must be called before [UpdateSelectedBottomIndex]
+  void showTyreController(int index) {
+    if (selectedBottomNavigationTab != 3 && index == 3) {
+      Future.delayed(
+        const Duration(milliseconds: 300),
+        () {
+          isShowTyres = true;
+          notifyListeners();
+        },
+      );
+    } else {
+      isShowTyres = false;
+      notifyListeners();
+    }
+  }
 }

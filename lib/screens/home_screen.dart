@@ -128,13 +128,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   _tempAnimationController.reverse(from: 0.4);
                 }
               }
-              if (index == 3) {
-                _tiresAnimationController.forward();
-              } else {
-                if (_controller.selectedBottomNavigationTab == 3) {
-                  _tiresAnimationController.reverse(from: 0.9);
-                }
-              }
+              // if (index == 3) {
+              //   _tiresAnimationController.forward();
+              // } else {
+              //   if (_controller.selectedBottomNavigationTab == 3) {
+              //     _tiresAnimationController.reverse(from: 0.9);
+              //   }
+              // }
+              _controller.showTyreController(index);
               _controller.onBottomNavigationTabChange(index);
             },
             selectedTab: _controller.selectedBottomNavigationTab,
@@ -148,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     height: constraints.maxHeight,
                     width: constraints.maxWidth,
                   ),
+                  // The car frame
                   AnimatedPositioned(
                     height: constraints.maxHeight,
                     width: constraints.maxWidth,
@@ -278,65 +280,68 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
 
                   // Tires
-                  Positioned(
-                    left: 10,
-                    top: 20,
-                    height: constraints.maxHeight *
-                        0.45 *
-                        (_tireInfoAnimation.value),
-                    width: constraints.maxWidth *
-                        0.45 *
-                        (_tireInfoAnimation.value),
-                    child: Opacity(
-                      child: TyrePsiCard(tyrePsi: demoPsiList.first),
-                      opacity: _tireInfoAnimation.value,
-                    ),
-                  ),
-                  AnimatedPositioned(
-                    duration: defaultDuration,
-                    right: 10,
-                    top: 20,
-                    height: constraints.maxHeight *
-                        0.45 *
-                        (_tireInfoAnimation.value),
-                    width: constraints.maxWidth *
-                        0.45 *
-                        (_tireInfoAnimation.value),
-                    child: Opacity(
-                      child: TyrePsiCard(tyrePsi: demoPsiList[1]),
-                      opacity: _tireInfoAnimation.value,
-                    ),
-                  ),
-                  AnimatedPositioned(
-                    duration: defaultDuration * 1.3,
-                    left: 10,
-                    bottom: 20,
-                    height: constraints.maxHeight *
-                        0.45 *
-                        (_tireInfoAnimation.value),
-                    width: constraints.maxWidth *
-                        0.45 *
-                        (_tireInfoAnimation.value),
-                    child: Opacity(
-                      child: TyrePsiCard(tyrePsi: demoPsiList[2]),
-                      opacity: _tireInfoAnimation.value,
-                    ),
-                  ),
-                  AnimatedPositioned(
-                    duration: defaultDuration * 1.5,
-                    right: 10,
-                    bottom: 20,
-                    height: constraints.maxHeight *
-                        0.45 *
-                        (_tireInfoAnimation.value),
-                    width: constraints.maxWidth *
-                        0.45 *
-                        (_tireInfoAnimation.value),
-                    child: Opacity(
-                      child: TyrePsiCard(tyrePsi: demoPsiList[3]),
-                      opacity: _tireInfoAnimation.value,
-                    ),
-                  ),
+                  if (_controller.isShowTyres) ...tyres(constraints),
+
+                  //   Positioned(
+                  //     left: 10,
+                  //     top: 20,
+                  //     height: constraints.maxHeight *
+                  //         0.45 *
+                  //         (_tireInfoAnimation.value),
+                  //     width: constraints.maxWidth *
+                  //         0.45 *
+                  //         (_tireInfoAnimation.value),
+                  //     child: Opacity(
+                  //       child: TyrePsiCard(tyrePsi: demoPsiList.first),
+                  //       opacity: _tireInfoAnimation.value,
+                  //     ),
+                  //   ),
+                  //   AnimatedPositioned(
+                  //     duration: defaultDuration,
+                  //     right: 10,
+                  //     top: 20,
+                  //     height: constraints.maxHeight *
+                  //         0.45 *
+                  //         (_tireInfoAnimation.value),
+                  //     width: constraints.maxWidth *
+                  //         0.45 *
+                  //         (_tireInfoAnimation.value),
+                  //     child: Opacity(
+                  //       child: TyrePsiCard(tyrePsi: demoPsiList[1]),
+                  //       opacity: _tireInfoAnimation.value,
+                  //     ),
+                  //   ),
+                  //   AnimatedPositioned(
+                  //     duration: defaultDuration * 1.3,
+                  //     left: 10,
+                  //     bottom: 20,
+                  //     height: constraints.maxHeight *
+                  //         0.45 *
+                  //         (_tireInfoAnimation.value),
+                  //     width: constraints.maxWidth *
+                  //         0.45 *
+                  //         (_tireInfoAnimation.value),
+                  //     child: Opacity(
+                  //       child: TyrePsiCard(tyrePsi: demoPsiList[2]),
+                  //       opacity: _tireInfoAnimation.value,
+                  //     ),
+                  //   ),
+                  //   AnimatedPositioned(
+                  //     duration: defaultDuration * 1.5,
+                  //     right: 10,
+                  //     bottom: 20,
+                  //     height: constraints.maxHeight *
+                  //         0.45 *
+                  //         (_tireInfoAnimation.value),
+                  //     width: constraints.maxWidth *
+                  //         0.45 *
+                  //         (_tireInfoAnimation.value),
+                  //     child: Opacity(
+                  //       child: TyrePsiCard(tyrePsi: demoPsiList[3]),
+                  //       opacity: _tireInfoAnimation.value,
+                  //     ),
+                  //   ),
+                  // ],
                 ],
               ),
             ),
@@ -344,6 +349,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         );
       },
     );
+  }
+
+  List<Widget> tyres(BoxConstraints constraints) {
+    return [
+      Positioned(
+        top: constraints.maxHeight * 0.2,
+        left: constraints.maxWidth * 0.25,
+        child: SvgPicture.asset('assets/icons/FL_Tyre.svg'),
+      ),
+      Positioned(
+        top: constraints.maxHeight * 0.2,
+        right: constraints.maxWidth * 0.25,
+        child: SvgPicture.asset('assets/icons/FL_Tyre.svg'),
+      ),
+      Positioned(
+        top: constraints.maxHeight * 0.6,
+        left: constraints.maxWidth * 0.25,
+        child: SvgPicture.asset('assets/icons/FL_Tyre.svg'),
+      ),
+      Positioned(
+        top: constraints.maxHeight * 0.6,
+        right: constraints.maxWidth * 0.25,
+        child: SvgPicture.asset('assets/icons/FL_Tyre.svg'),
+      ),
+    ];
   }
 }
 
@@ -388,17 +418,17 @@ class TyrePsiCard extends StatelessWidget {
                   children: [
                     Text(
                       'LOW'.toUpperCase(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline3!
-                          .copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.headline3!.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.0,
+                          ),
                     ),
                     Text(
                       'PRESSURE'.toUpperCase(),
                       style: Theme.of(context).textTheme.headline6!.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.white54,
-                            fontSize: 16.0,
+                            fontSize: 12.0,
                           ),
                     ),
                   ],
